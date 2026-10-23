@@ -49,18 +49,18 @@ def apply_base_layout(fig: go.Figure, title: str, x_title: str = "", y_title: st
     fig.update_layout(
         title={
             "text": f"<b>{title}</b>",
-            "y": 0.96,
-            "x": 0.02,
+            "y": 0.98,
+            "x": 0.01,
             "xanchor": "left",
             "yanchor": "top",
-            "font": {"size": 14, "color": THEME["text_primary"], "family": FONT_FAMILY}
+            "font": {"size": 13, "color": THEME["text_primary"], "family": FONT_FAMILY}
         },
         font={"family": FONT_FAMILY, "color": THEME["text_secondary"], "size": 11},
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=36, r=24, t=44, b=32),
+        margin=dict(l=36, r=20, t=36, b=28),
         xaxis=dict(
-            title=dict(text=x_title, font=dict(size=11, color=THEME["text_secondary"])),
+            title=dict(text=x_title, font=dict(size=10, color=THEME["text_secondary"])),
             showgrid=True,
             gridcolor=THEME["grid"],
             gridwidth=1,
@@ -69,7 +69,7 @@ def apply_base_layout(fig: go.Figure, title: str, x_title: str = "", y_title: st
             zeroline=False
         ),
         yaxis=dict(
-            title=dict(text=y_title, font=dict(size=11, color=THEME["text_secondary"])),
+            title=dict(text=y_title, font=dict(size=10, color=THEME["text_secondary"])),
             showgrid=True,
             gridcolor=THEME["grid"],
             gridwidth=1,
@@ -80,10 +80,10 @@ def apply_base_layout(fig: go.Figure, title: str, x_title: str = "", y_title: st
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=1.02,
+            y=1.08,
             xanchor="right",
             x=1,
-            font=dict(size=11, color=THEME["text_secondary"])
+            font=dict(size=10, color=THEME["text_secondary"])
         ),
         hoverlabel=dict(
             bgcolor=THEME["text_primary"],
@@ -130,15 +130,15 @@ def plot_monthly_trend(ts_df: pd.DataFrame) -> go.Figure:
     fig.update_layout(
         title={
             "text": "<b>Monthly Revenue & Profit Trajectory</b>",
-            "y": 0.96,
-            "x": 0.02,
-            "font": {"size": 14, "color": THEME["text_primary"], "family": FONT_FAMILY}
+            "y": 0.98,
+            "x": 0.01,
+            "font": {"size": 13, "color": THEME["text_primary"], "family": FONT_FAMILY}
         },
         font={"family": FONT_FAMILY, "color": THEME["text_secondary"], "size": 11},
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=36, r=36, t=44, b=32),
-        legend=dict(orientation="h", y=1.04, x=1, xanchor="right", font=dict(size=11)),
+        margin=dict(l=36, r=36, t=36, b=28),
+        legend=dict(orientation="h", y=1.08, x=1, xanchor="right", font=dict(size=10)),
         hovermode="x unified"
     )
 
@@ -174,7 +174,21 @@ def plot_category_performance(cat_df: pd.DataFrame) -> go.Figure:
     )
 
     apply_base_layout(fig, "Category Performance", "", "Amount ($)")
-    fig.update_layout(barmode="group", bargap=0.25, bargroupgap=0.08)
+    fig.update_layout(
+        barmode="group",
+        bargap=0.25,
+        bargroupgap=0.08,
+        height=320,
+        margin=dict(l=36, r=16, t=28, b=36),
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.14,
+            xanchor="center",
+            x=0.5,
+            font=dict(size=10, color=THEME["text_secondary"])
+        )
+    )
     return fig
 
 
