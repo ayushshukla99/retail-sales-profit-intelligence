@@ -1,0 +1,143 @@
+/*
+=============================================================================
+RETAIL SALES & PROFIT INTELLIGENCE PLATFORM
+Power BI DAX Measure Library (Data Analysis Expressions)
+=============================================================================
+Author: Senior BI Engineer
+Model: Retail Transactions / Star Schema
+Target Tables: Fact_Sales (or Cleaned_Superstore)
+=============================================================================
+*/
+
+// --- 1. CORE VOLUME & REVENUE MEASURES ---
+
+Total Sales = 
+SUM(Fact_Sales[Sales])
+
+Total Profit = 
+SUM(Fact_Sales[Profit])
+
+Units Sold = 
+SUM(Fact_Sales[Quantity])
+
+Total Transactions = 
+COUNTROWS(Fact_Sales)
+
+
+// --- 2. ORDERS & TICKET VALUE (AVOIDS DOUBLE COUNTING) ---
+
+Total Orders = 
+DISTINCTCOUNT(Fact_Sales[Order ID])
+
+Average Order Value = 
+DIVIDE(
+    [Total Sales],
+    [Total Orders],
+    0
+)
+
+Units Per Order = 
+DIVIDE(
+    [Units Sold],
+    [Total Orders],
+    0
+)
+
+Total Customers = 
+DISTINCTCOUNT(Fact_Sales[Customer ID])
+
+Sales Per Customer = 
+DIVIDE(
+    [Total Sales],
+    [Total Customers],
+    0
+)
+
+
+// --- 3. PROFITABILITY & MARGIN EFFICIENCY ---
+
+Profit Margin % = 
+DIVIDE(
+    [Total Profit],
+    [Total Sales],
+    0
+)
+
+Average Discount Rate = 
+AVERAGE(Fact_Sales[Discount])
+
+// Highlighting loss transactions
+Loss Making Sales = 
+CALCULATE(
+    [Total Sales],
+    Fact_Sales[Profit] < 0
+)
+
+Total Net Loss = 
+CALCULATE(
+    [Total Profit],
+    Fact_Sales[Profit] < 0
+)
+
+Loss Line Items Count = 
+CALCULATE(
+    COUNTROWS(Fact_Sales),
+    Fact_Sales[Profit] < 0
+)
+
+Loss Line Item Ratio % = 
+DIVIDE(
+    [Loss Line Items Count],
+    [Total Transactions],
+    0
+)
+
+
+// --- 4. TIME INTELLIGENCE & YEAR-OVER-YEAR (YOY) ---
+
+Sales YTD = 
+TOTALYTD(
+    [Total Sales],
+    'Dim_Date'[Date]
+)
+
+Sales Prior Year (PY) = 
+CALCULATE(
+    [Total Sales],
+    SAMEPERIODLASTYEAR('Dim_Date'[Date])
+)
+
+Sales YoY Growth $ = 
+[Total Sales] - [Sales Prior Year (PY)]
+
+Sales YoY Growth % = 
+DIVIDE(
+    [Sales YoY Growth $],
+    [Sales Prior Year (PY)],
+    0
+)
+
+Profit Prior Year (PY) = 
+CALCULATE(
+    [Total Profit],
+    SAMEPERIODLASTYEAR('Dim_Date'[Date])
+)
+
+Profit YoY Growth % = 
+DIVIDE(
+    [Total Profit] - [Profit Prior Year (PY)],
+    [Profit Prior Year (PY)],
+    0
+)
+
+
+// --- 5. DYNAMIC FORMATTING & KPI STATUS INDICATORS ---
+
+Profit Margin Status Indicator = 
+SWITCH(
+    TRUE(),
+    [Profit Margin %] >= 0.15, "🟢 Healthy (>= 15%)",
+    [Profit Margin %] >= 0.05, "🟡 Moderate (5% - 15%)",
+    [Profit Margin %] >= 0.00, "🟠 Low (0% - 5%)",
+    "🔴 Critical Loss (< 0%)"
+)
